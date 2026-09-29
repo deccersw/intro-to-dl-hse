@@ -1,3 +1,4 @@
+import modules as mm
 import sys
 import torch
 import numpy as np
@@ -5,7 +6,6 @@ from .test_base import assert_almost_equal
 from torch import nn
 
 sys.path.append('..')
-import modules as mm
 
 
 input_shapes = [(64, 16), (128, 32), (256, 64)]
@@ -54,15 +54,18 @@ def _test_sequential(in_features=10, out_features=20, batch_size=128,
             y1 = module1(x1)
             y2 = module2(x2)
             assert y1.dtype == x1.dtype
-            assert_almost_equal(y1, y2.detach().numpy(), debug_msg + 'forward pass: {}')
+            assert_almost_equal(y1, y2.detach().numpy(),
+                                debug_msg + 'forward pass: {}')
 
             grad_output = np.random.randn(*y1.shape)
             y2.backward(torch.from_numpy(grad_output))
             grad_input = module1.backward(x1, grad_output)
-            assert_almost_equal(x2.grad.numpy(), grad_input, debug_msg + 'input grad: {}')
+            assert_almost_equal(x2.grad.numpy(), grad_input,
+                                debug_msg + 'input grad: {}')
 
             for grad, param in zip(module1.parameters_grad(), module2.parameters()):
-                assert_almost_equal(grad, param.grad.numpy(), debug_msg + 'params grad: {}')
+                assert_almost_equal(grad, param.grad.numpy(),
+                                    debug_msg + 'params grad: {}')
 
 
 def test_sequential():

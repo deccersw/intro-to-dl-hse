@@ -6,3 +6,5 @@ PokemonData/
 README-old.md
 *.pt
 *.pyc
+*.venv
+video_analysis/

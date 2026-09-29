@@ -14,6 +14,7 @@ class Module(ABC):
     """
     Basic class for all neural network modules
     """
+
     def __init__(self):
         self.output = None
         self.training = True
@@ -114,6 +115,7 @@ class Criterion(ABC):
     """
     Basic class for all criterions (i.e. loss functions)
     """
+
     def __init__(self):
         self.output = None
 
@@ -177,6 +179,7 @@ class Optimizer(ABC):
     """
     Basic class for all optimizers
     """
+
     def __init__(self, module: Module):
         """
         :param module: neural network containing parameters to optimize

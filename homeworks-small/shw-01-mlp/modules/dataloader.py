@@ -1,7 +1,11 @@
+import numpy as np
+
+
 class DataLoader(object):
     """
     Tool for shuffling data and forming mini-batches
     """
+
     def __init__(self, X, y, batch_size=1, shuffle=False):
         """
         :param X: dataset features
@@ -20,22 +24,26 @@ class DataLoader(object):
         """
         :return: number of batches per epoch
         """
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return 0
+        return np.ceil(self.X.shape[0] / self.batch_size).astype(int)
 
     def num_samples(self) -> int:
         """
         :return: number of data samples
         """
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return 0
+
+        return self.X.shape[0]
 
     def __iter__(self):
         """
         Shuffle data samples if required
         :return: self
         """
-        # your code here ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
+        self.batch_id = 0
+        if self.shuffle:
+            indices = np.random.permutation(self.X.shape[0])
+            self.X = self.X[indices]
+            self.y = self.y[indices]
+
         return self
 
     def __next__(self):
@@ -43,5 +51,13 @@ class DataLoader(object):
         Form and return next data batch
         :return: (x_batch, y_batch)
         """
-        # your code here ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
+        if self.batch_id < len(self):
+            batch_id = self.batch_id
+            self.batch_id += 1
+
+            start = batch_id * self.batch_size
+            end = start + self.batch_size
+
+            return self.X[start:end], self.y[start:end]
+
         raise StopIteration

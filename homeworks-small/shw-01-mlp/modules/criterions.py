@@ -7,6 +7,7 @@ class MSELoss(Criterion):
     """
     Mean squared error criterion
     """
+
     def compute_output(self, input: np.ndarray, target: np.ndarray) -> float:
         """
         :param input: array of size (batch_size, *)
@@ -14,8 +15,8 @@ class MSELoss(Criterion):
         :return: loss value
         """
         assert input.shape == target.shape, 'input and target shapes not matching'
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return super().compute_output(input, target)
+
+        return np.power(input-target, 2).mean()
 
     def compute_grad_input(self, input: np.ndarray, target: np.ndarray) -> np.ndarray:
         """
@@ -24,14 +25,15 @@ class MSELoss(Criterion):
         :return: array of size (batch_size, *)
         """
         assert input.shape == target.shape, 'input and target shapes not matching'
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return super().compute_grad_input(input, target)
+
+        return 2 * (input - target) / input.size
 
 
 class CrossEntropyLoss(Criterion):
     """
     Cross-entropy criterion over distribution logits
     """
+
     def __init__(self, label_smoothing: float = 0.0):
         super().__init__()
         self.log_softmax = LogSoftmax()
@@ -43,8 +45,12 @@ class CrossEntropyLoss(Criterion):
         :param target: labels array of size (batch_size, )
         :return: loss value
         """
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return super().compute_output(input, target)
+        log_probs = self.log_softmax(input)
+        true_log_probs = log_probs[np.arange(input.shape[0]), target]
+        loss = - (1 - self.label_smoothing) * true_log_probs - \
+            self.label_smoothing * log_probs.mean(axis=1)
+
+        return loss.mean()
 
     def compute_grad_input(self, input: np.ndarray, target: np.ndarray) -> np.ndarray:
         """
@@ -52,5 +58,10 @@ class CrossEntropyLoss(Criterion):
         :param target: labels array of size (batch_size, )
         :return: array of size (batch_size, num_classes)
         """
-        # replace with your code ｀、ヽ｀、ヽ(ノ＞＜)ノ ヽ｀☂｀、ヽ
-        return super().compute_grad_input(input, target)
+        log_probs = self.log_softmax(input)
+        probs = np.exp(log_probs)
+
+        probs -= (self.label_smoothing / input.shape[1])
+        probs[np.arange(input.shape[0]), target] -= 1 - self.label_smoothing
+
+        return probs / input.shape[0]

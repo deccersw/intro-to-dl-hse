@@ -1,3 +1,10 @@
 torch
 ipykernel
 numpy
+scipy
+tqdm
+ipywidgets
+pandas
+matplotlib
+seaborn
+scikit-learn

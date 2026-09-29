@@ -7,6 +7,7 @@ class SGD(Optimizer):
     """
     Optimizer implementing stochastic gradient descent with momentum
     """
+
     def __init__(self, module: Module, lr: float = 1e-2, momentum: float = 0.0,
                  weight_decay: float = 0.0, nesterov: bool = False):
         """
@@ -35,13 +36,22 @@ class SGD(Optimizer):
             hint: consider using np.add(..., out=m) for in place addition,
               i.e. we need to change original array, not its copy
             """
-            pass
+            g = grad + param * self.weight_decay
+
+            if self.momentum != 0:
+                np.add(self.momentum * m, g, out=m)
+                if self.nesterov:
+                    g += self.momentum * m
+                else:
+                    g = m
+            param -= self.lr * g
 
 
 class Adam(Optimizer):
     """
     Optimizer implementing Adam
     """
+
     def __init__(self, module: Module, lr: float = 1e-3,
                  betas: Tuple[float, float] = (0.9, 0.999),
                  eps: float = 1e-8, weight_decay: float = 0.0):
@@ -78,4 +88,11 @@ class Adam(Optimizer):
             hint: consider using np.add(..., out=m) for in place addition,
               i.e. we need to change original array, not its copy
             """
-            pass
+            g = grad + self.weight_decay * param
+            np.add(m * self.beta1, (1 - self.beta1) * g, out=m)
+            np.add(v * self.beta2, (1 - self.beta2) * g * g, out=v)
+
+            m_ = m / (1 - self.beta1 ** t)
+            v_ = v / (1 - self.beta2 ** t)
+
+            param -= self.lr * m_ / (np.sqrt(v_) + self.eps)
