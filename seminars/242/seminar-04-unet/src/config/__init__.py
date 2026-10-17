@@ -1,1 +1,0 @@
-from . import oxford_iiit_cats, oxford_iiit_cats_super, oxford_iiit_cats_edges, oxford_iiit_cats_edges_super
